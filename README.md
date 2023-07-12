@@ -1,8 +1,8 @@
-# 基于Paddle复现《Real Image Denoising with Feature Attention》
+# 基于Paddle复现《Selective Residual M-Net for Real Image Denoising》
 
 ## 1.简介
 
-Deep convolutional neural networks perform better on images containing spatially invariant noise (synthetic noise); however, their performance is limited on real-noisy photographs and requires multiple stage network modeling. To advance the practicability of denoising algorithms, this paper proposes a novel single-stage blind real image denoising network (RIDNet) by employing a modular architecture. We use a residual on the residual structure to ease the flow of low-frequency information and apply feature attention to exploit the channel dependencies. Furthermore, the evaluation in terms of quantitative metrics and visual quality on three synthetic and four real noisy datasets against 19 state-of-the-art algorithms demonstrate the superiority of our RIDNet.
+Image restoration is a low-level vision task which is to restore degraded images to noise-free images. With the success of deep neural networks, the convolutional neural networks surpass the traditional restoration methods and become the mainstream in the computer vision area. To advance the performanceof denoising algorithms, we propose a blind real image denoising network (SRMNet) by employing a hierarchical architecture improved from U-Net. Specifically, we use a selective kernel with residual block on the hierarchical structure called M-Net to enrich the multi-scale semantic information. Furthermore, our SRMNet has competitive performance results on two synthetic and two real-world noisy datasets in terms of quantitative metrics and visual quality. The source code and pretrained model are available at https://github.com/TentativeGitHub/SRMNet.
 
 
 ## 2.复现精度
@@ -11,7 +11,7 @@ Deep convolutional neural networks perform better on images containing spatially
 
 | Network | opt   | iters  | learning rate | batch_size | dataset | GPUS | PSNR    |
 | ------- | ----- | ------ | ------------- | ---------- | ------- | ---- | ------- |
-| RIDNet  | AdamW | 400000 | 1.5e-4        | 8          | SIDD    | 1    | 40.3460 |
+| SRMNet  | AdamW | 600000 | 1.5e-4        | 8          | SIDD    | 1    | 41.1453 |
 
 
 ## 3.数据集
@@ -23,7 +23,7 @@ Deep convolutional neural networks perform better on images containing spatially
 
 最优权重:
 
-链接：https://pan.baidu.com/s/1Q1mdxfE1wmm0Pr33M3tcLQ?pwd=hh66 
+链接：https://pan.baidu.com/s/1GGd927iFJLKEK64EBloIQQ?pwd=hh66 
 提取码：hh66
 
 
@@ -41,13 +41,13 @@ scikit-image == 0.19.2
 多卡训练，启动方式如下：
 
 ```shell
-python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_RIDNet.yml 
+python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_SRMNet.yml 
 ```
 
 多卡恢复训练，启动方式如下：
 
 ```shell
-python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_RIDNet.yml --resume ../245_model
+python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_SRMNet.yml --resume ../245_model
 ```
 
 参数介绍：
@@ -63,10 +63,10 @@ resume: 从哪个模型开始恢复训练，需要pdparams和pdopt文件。
 验证数据的地址需要设置configs/GaussianColorDenoising_Restormer.yml中的datasets.val.dataroot_gt参数。
 
 ```shell
-python val.py -opt configs/GaussianColorDenoising_RIDNet.yml --weights output/model/last_model.pdparams --sigmas 15 
+python val.py -opt configs/GaussianColorDenoising_SRMNet.yml --weights output/model/best_model.pdparams --sigmas 15 
 ```
 
-[Eval] PSNR: 40.3460
+[Eval] PSNR: 41.1453
 
 ```
 参数说明：
@@ -104,7 +104,7 @@ sigmas: 噪声等级。
 模型导出可执行以下命令：
 
 ```shell
-python export_model.py -opt ./test_tipc/configs/GaussianColorDenoising_RIDNet.yml --model_path ./output/model/last_model.pdparams --save_dir ./test_tipc/output/
+python export_model.py -opt ./test_tipc/configs/GaussianColorDenoising_SRMNet.yml --model_path ./output/model/BEST_model.pdparams --save_dir ./test_tipc/output/
 ```
 
 参数说明：
@@ -194,7 +194,6 @@ Restormer_Paddle
 
 | 信息     | 描述                |
 | -------- | ------------------- |
-| 模型名称 | RIDNet              |
+| 模型名称 | SRMNet              |
 | 框架版本 | PaddlePaddle==2.2.0 |
 | 应用场景 | 降噪                |
-
