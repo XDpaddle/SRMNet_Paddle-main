@@ -5,8 +5,6 @@ import lmdb
 import paddle
 from paddle.io import Dataset
 import data.util as util
-import os.path as osp
-# from cv2.ximgproc import guidedFilter
 
 
 class LQGTDataset_rcan(Dataset):
@@ -25,8 +23,6 @@ class LQGTDataset_rcan(Dataset):
 
         self.paths_GT, self.sizes_GT = util.get_image_paths(self.data_type, opt['dataroot_GT'])
         self.paths_LQ, self.sizes_LQ = util.get_image_paths(self.data_type, opt['dataroot_LQ'])
-        #self.paths_cond, self.sizes_cond = util.get_image_paths(self.data_type, opt['dataroot_cond'])
-        #self.cond_folder = opt['dataroot_cond']
 
         # self.paths_GT=[self.paths_GT[400000],self.paths_GT[800000],self.paths_GT[1200000]]
         # self.paths_LQ=[self.paths_LQ[400000],self.paths_LQ[800000],self.paths_LQ[1200000]]
@@ -101,18 +97,6 @@ class LQGTDataset_rcan(Dataset):
 
         #print(np.array(img_LQ).astype('float32'))
         
-        # # get condition
-        """
-        cond_scale = self.opt['cond_scale']
-        if self.cond_folder is not None:
-            if '_' in osp.basename(LQ_path):
-                cond_name = '_'.join(osp.basename(LQ_path).split('_')[:-1])+'_bicx'+str(cond_scale)+'.png'
-            else: cond_name = osp.basename(LQ_path).split('.')[0]+'_bicx'+str(cond_scale)+'.png'
-            cond_path = osp.join(self.cond_folder, cond_name)
-        """
-        #SDR_base = guidedFilter(guide=img_LQ, src=img_LQ, radius=5, eps=0.01)
-        cond = img_LQ.copy()
-        
         if self.opt['phase'] == 'train':
             # if the image size is too small
             H, W, _ = img_GT.shape
@@ -155,17 +139,13 @@ class LQGTDataset_rcan(Dataset):
         if img_GT.shape[2] == 3:
             img_GT = img_GT[:, :, [2, 1, 0]]
             img_LQ = img_LQ[:, :, [2, 1, 0]]
-            cond = cond[:, :, [2, 1, 0]]
-            #SDR_base = SDR_base[:, :, [2, 1, 0]]
         #print(np.array(img_GT).astype('float32'))
         img_GT = paddle.to_tensor(np.ascontiguousarray(np.transpose(img_GT, (2, 0, 1))),paddle.float32)
         img_LQ = paddle.to_tensor(np.ascontiguousarray(np.transpose(img_LQ, (2, 0, 1))),paddle.float32)
-        cond = paddle.to_tensor(np.ascontiguousarray(np.transpose(cond, (2, 0, 1))),paddle.float32)
-        #SDR_base = paddle.to_tensor(np.ascontiguousarray(np.transpose(SDR_base, (2, 0, 1))),paddle.float32)
 
         if LQ_path is None:
             LQ_path = GT_path
-        return {'LQ': img_LQ, 'GT': img_GT, 'cond': cond, 'LQ_path': LQ_path, 'GT_path': GT_path}
+        return {'LQ': img_LQ, 'GT': img_GT, 'LQ_path': LQ_path, 'GT_path': GT_path}
 
     def __len__(self):
         return len(self.paths_GT)

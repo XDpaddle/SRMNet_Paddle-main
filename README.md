@@ -1,10 +1,10 @@
-# HDRUNet_paddle
+# hyconditm_paddle
 
-Paper: HDRUNet: Single Image HDR Reconstruction with Denoising and Dequantization.
+Paper: Hybrid Conditional Deep Inverse Tone Mapping.
 
-[Paper](https://paperswithcode.com/paper/hdrunet-single-image-hdr-reconstruction-with)
+[Paper](https://paperswithcode.com/paper/a-new-journey-from-sdrtv-to-hdrtv)
 
-作者: Xiangyu Chen等
+作者: Tong shao等
 
 Paddle 复现版本
 
@@ -16,7 +16,7 @@ https://pan.baidu.com/s/1OSLVoBioyen-zjvLmhbe2g
 
 ## 训练模型
 
-链接：https://pan.baidu.com/s/15v9e9vQ5RLk7P8y7TJyQqw?pwd=hh66 
+链接：https://pan.baidu.com/s/1ehapDcpGIWY3wPSObj44iA?pwd=hh66 
 提取码：hh66
 
 ## 训练步骤
@@ -24,7 +24,7 @@ https://pan.baidu.com/s/1OSLVoBioyen-zjvLmhbe2g
 ### train 
 
 ```bash
-python train.py -opt config/train/train_HDRUNet.yml
+python train.py -opt config/train/train_hyconditm.yml
 ```
 
 ```
@@ -36,13 +36,13 @@ python -m paddle.distributed.launch train.py --launcher fleet -opt config_file_p
 ## 测试步骤
 
 ```bash
-python test.py -opt config/test/test_HDRUNet.yml
+python test.py -opt config/test/test_hyconditm.yml
 ```
 
 ## 复现指标
 
 |        | PSNR  |
 | ------ | ----- |
-| Paddle | 37.35 |
+| Paddle | 37.94 |
 
 注：因显存限制，测试结果为测试图片降采样到1080p的结果

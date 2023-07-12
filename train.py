@@ -146,7 +146,6 @@ def main():
             model.update_learning_rate(current_step, warmup_iter=opt['train']['warmup_iter'])
             #### training
             #print(train_data)
-            #paddle.disable_static()
             model.feed_data(train_data)
             model.optimize_parameters(current_step)
 
@@ -194,7 +193,7 @@ def main():
                     #util.save_img(sr_img, save_img_path)
 
                     # calculate PSNR
-                    sr_img, gt_img = util.crop_border([sr_img, gt_img], opt['scale'])
+                    #sr_img, gt_img = util.crop_border([sr_img, gt_img], opt['scale'])
                     avg_psnr += util.calculate_psnr(sr_img, gt_img)
                     pbar.update('Test {}'.format(img_name))
 

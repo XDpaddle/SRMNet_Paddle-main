@@ -96,13 +96,6 @@ class SRModel(BaseModel):
                         train_opt['T_period'], eta_min=train_opt['eta_min'],
                         restarts=train_opt['restarts'], weights=train_opt['restart_weights']))
                     #optimizer._learning_rate = self.schedulers[-1]
-            elif train_opt['lr_scheme'] == 'MultiStepLR_Restart':
-                self.schedulers.append(
-                    lr_scheduler.MultiStepLR_Restart(train_opt['T_period'],
-                                                    restarts=train_opt['restarts'],
-                                                    weights=train_opt['restart_weights'],
-                                                    gamma=train_opt['lr_gamma'],
-                                                    clear_state=train_opt['clear_state']))
             else:
                 raise NotImplementedError('MultiStepLR learning rate scheme is enough.')
             # self.optimizer_G = paddle.optimizer.SGD(learning_rate=self.schedulers[0], parameters=optim_params,
@@ -117,10 +110,7 @@ class SRModel(BaseModel):
             self.log_dict = OrderedDict()
 
     def feed_data(self, data, need_GT=True):
-        paddle.device.set_device("gpu")
         self.var_L = data['LQ']#.to(self.device)  # LQ
-        #self.SDR_base = data['SDR_base']#.to(self.device) # condition
-        self.var_cond = data['cond']
         #self.var_L = F.normalize(self.var_L, axis=2)
         if need_GT:
             self.real_H = data['GT']#.to(self.device)  # GT
@@ -130,7 +120,7 @@ class SRModel(BaseModel):
     def optimize_parameters(self, step):
         # 归一化
         self.optimizer_G.clear_grad()
-        self.fake_H = self.netG((self.var_L, self.var_cond)) # HDRUnet格式
+        self.fake_H = self.netG(self.var_L)
         l_pix = self.l_pix_w * self.cri_pix(self.fake_H, self.real_H)
         l_pix.backward()
         self.optimizer_G.step()
@@ -141,7 +131,7 @@ class SRModel(BaseModel):
     def test(self):
         self.netG.eval()
         with paddle.no_grad():
-            self.fake_H = self.netG((self.var_L, self.var_cond))
+            self.fake_H = self.netG(self.var_L)
         self.netG.train()
 
 
