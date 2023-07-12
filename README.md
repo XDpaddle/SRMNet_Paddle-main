@@ -1,8 +1,8 @@
-# 基于Paddle复现《Neighbor2Neighbor: Self-Supervised Denoising from Single Noisy Images》
+# 基于Paddle复现《NBNet: Noise Basis Learning for Image Denoising with Subspace Projection》
 
 ## 1.简介
 
-In the last few years, image denoising has benefited a lot from the fast development of neural networks. However, the requirement of large amounts of noisy-clean image pairs for supervision limits the wide use of these models. Although there have been a few attempts in training an image denoising model with only single noisy images, existing self-supervised denoising approaches suffer from inefficient network training, loss of useful information, or dependence on noise modeling. In this paper, we present a very simple yet effective method named Neighbor2Neighbor to train an effective image denoising model with only noisy images. Firstly, a random neighbor sub-sampler is proposed for the generation of training image pairs. In detail, input and target used to train a network are images sub-sampled from the same noisy image, satisfying the requirement that paired pixels of paired images are neighbors and have very similar appearance with each other. Secondly, a denoising network is trained on sub-sampled training pairs generated in the first stage, with a proposed regularizer as additional loss for better performance. The proposed Neighbor2Neighbor framework is able to enjoy the progress of state-of-the-art supervised denoising networks in network architecture design. Moreover, it avoids heavy dependence on the assumption of the noise distribution. We explain our approach from a theoretical perspective and further validate it through extensive experiments, including synthetic experiments with different noise distributions in sRGB space and real-world experiments on a denoising benchmark dataset in raw-RGB space.
+In this paper, we introduce NBNet, a novel framework for image denoising. Unlike previous works, we propose to tackle this challenging problem from a new perspective: noise reduction by image-adaptive projection. Specifically, we propose to train a network that can separate signal and noise by learning a set of reconstruction basis in the feature space. Subsequently, image denosing can be achieved by selecting corresponding basis of the signal subspace and projecting the input into such space. Our key insight is that projection can naturally maintain the local structure of input signal, especially for areas with low light or weak textures. Towards this end, we propose SSA, a non-local subspace attention module designed explicitly to learn the basis generation as well as the subspace projection. We further incorporate SSA with NBNet, a UNet structured network designed for end-to-end image denosing. We conduct evaluations on benchmarks, including SIDD and DND, and NBNet achieves state-of-the-art performance on PSNR and SSIM with significantly less computational cost.
 
 
 ## 2.复现精度
@@ -11,7 +11,7 @@ In the last few years, image denoising has benefited a lot from the fast develop
 
 | Network | opt   | iters  | learning rate | batch_size | dataset | GPUS | PSNR    |
 | ------- | ----- | ------ | ------------- | ---------- | ------- | ---- | ------- |
-| N2NNet  | AdamW | 800000 | 1.5e-4        | 8          | SIDD    | 1    | 40.6007 |
+| NBNet | AdamW | 1000000 | 1.5e-4        | 4          | SIDD    | 1    | 40.24 |
 
 
 ## 3.数据集
@@ -23,7 +23,7 @@ In the last few years, image denoising has benefited a lot from the fast develop
 
 最优权重:
 
-链接：https://pan.baidu.com/s/1I4vtue4skY_9o8mDw9STKA?pwd=hh66 
+链接：https://pan.baidu.com/s/1JP2MFpxM6a4jEC4787GZaw?pwd=hh66 
 提取码：hh66
 
 
@@ -41,13 +41,13 @@ scikit-image == 0.19.2
 多卡训练，启动方式如下：
 
 ```shell
-python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_N2NNet.yml 
+python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_NBNet.yml 
 ```
 
 多卡恢复训练，启动方式如下：
 
 ```shell
-python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_N2NNet.yml --resume ../245_model
+python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_NBNet.yml --resume ../245_model
 ```
 
 参数介绍：
@@ -63,7 +63,7 @@ resume: 从哪个模型开始恢复训练，需要pdparams和pdopt文件。
 验证数据的地址需要设置configs/GaussianColorDenoising_Restormer.yml中的datasets.val.dataroot_gt参数。
 
 ```shell
-python val.py -opt configs/GaussianColorDenoising_N2NNet.yml --weights output/model/best_model.pdparams --sigmas 15 
+python val.py -opt configs/GaussianColorDenoising_NBNet.yml --weights output/model/last_model.pdparams --sigmas 15 
 ```
 
 [Eval] PSNR: 40.5062
@@ -104,7 +104,7 @@ sigmas: 噪声等级。
 模型导出可执行以下命令：
 
 ```shell
-python export_model.py -opt ./test_tipc/configs/GaussianColorDenoising_N2NNet.yml --model_path ./output/model/last_model.pdparams --save_dir ./test_tipc/output/
+python export_model.py -opt ./test_tipc/configs/GaussianColorDenoising_NBNet.yml --model_path ./output/model/last_model.pdparams --save_dir ./test_tipc/output/
 ```
 
 参数说明：
@@ -121,7 +121,7 @@ save_dir: 输出图片保存路径
 
 ```shell
 python infer.py
---use_gpu=False --enable_mkldnn=False --cpu_threads=2 --model_file=./test_tipc/output/model.pdmodel --batch_size=2 --input_file=../data/SIDD --enable_benchmark=True --precision=fp32 --params_file=.output/best_model.pdiparams 
+--use_gpu=False --enable_mkldnn=False --cpu_threads=2 --model_file=./test_tipc/output/model.pdmodel --batch_size=2 --input_file=../data/SIDD --enable_benchmark=True --precision=fp32 --params_file=.output/last_model.pdiparams 
 ```
 
 参数说明:
@@ -194,7 +194,7 @@ Restormer_Paddle
 
 | 信息     | 描述                |
 | -------- | ------------------- |
-| 模型名称 | N2NNet              |
+| 模型名称 | NBNet              |
 | 框架版本 | PaddlePaddle==2.2.0 |
 | 应用场景 | 降噪                |
 

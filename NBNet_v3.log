@@ -1,0 +1,638 @@
+nohup: ignoring input
+Disable distributed.
+WARNING: OMP_NUM_THREADS set to 14, not 1. The computation speed will not be optimized if you use data parallel. It will fail if this PaddlePaddle binary is compiled with OpenBlas since OpenBlas does not support multi-threads.
+PLEASE USE OMP_NUM_THREADS WISELY.
+/root/miniconda3/lib/python3.8/site-packages/skimage/data/__init__.py:107: DeprecationWarning: 
+    Importing file_hash from pooch.utils is DEPRECATED. Please import from the
+    top-level namespace (`from pooch import file_hash`) instead, which is fully
+    backwards compatible with pooch >= 0.1.
+    
+  return file_hash(path) == expected_hash
+2023-06-10 00:05:25,845 INFO: 
+  name: GaussianColorDenoising_NBNet
+  model_type: ImageCleanModel
+  scale: 1
+  num_gpu: 1
+  manual_seed: 100
+  datasets:[
+    train:[
+      name: TrainSet
+      type: Dataset_GaussianDenoising
+      sigma_type: random
+      sigma_range: [0, 50]
+      in_ch: 3
+      dataroot_gt: /root/autodl-tmp/SIDD/data/SIDD_patches/train/groundtruth
+      dataroot_lq: none
+      geometric_augs: True
+      filename_tmpl: {}
+      io_backend:[
+        type: disk
+      ]
+      use_shuffle: True
+      num_worker_per_gpu: 8
+      batch_size_per_gpu: 4
+      mini_batch_sizes: [8, 5, 4, 2, 1, 1]
+      iters: [184000, 128000, 96000, 72000, 72000, 48000]
+      gt_size: 384
+      gt_sizes: [128, 160, 192, 256, 320, 384]
+      dataset_enlarge_ratio: 1
+      prefetch_mode: None
+      phase: train
+      scale: 1
+    ]
+    val:[
+      name: ValSet
+      type: Dataset_GaussianDenoising
+      sigma_test: 15
+      in_ch: 3
+      dataroot_gt: /root/autodl-tmp/CBSD68-dataset-master/CBSD68/original_png
+      dataroot_lq: none
+      io_backend:[
+        type: disk
+      ]
+      phase: val
+      scale: 1
+    ]
+  ]
+  network_g:[
+    type: NBNet
+  ]
+  path:[
+    pretrain_network_g: None
+    strict_load_g: True
+    resume_state: None
+    output: /root/autodl-tmp/Restormer_Paddle-main/exp/
+    root: /root/autodl-tmp
+    experiments_root: /root/autodl-tmp/Restormer_Paddle-main/exp/experiments/GaussianColorDenoising_NBNet
+    models: /root/autodl-tmp/Restormer_Paddle-main/exp/experiments/GaussianColorDenoising_NBNet/models
+    training_states: /root/autodl-tmp/Restormer_Paddle-main/exp/experiments/GaussianColorDenoising_NBNet/training_states
+    log: /root/autodl-tmp/Restormer_Paddle-main/exp/experiments/GaussianColorDenoising_NBNet
+    visualization: /root/autodl-tmp/Restormer_Paddle-main/exp/experiments/GaussianColorDenoising_NBNet/visualization
+  ]
+  train:[
+    total_iter: 1000000
+    warmup_iter: -1
+    use_grad_clip: True
+    scheduler:[
+      type: CosineAnnealingRestartCyclicLR
+      learning_rate: 0.00015
+      periods: [184000, 416000]
+      restart_weights: [1, 1]
+      eta_mins: [0.00015, 1e-06]
+    ]
+    mixing_augs:[
+      mixup: True
+      mixup_beta: 1.2
+      use_identity: True
+    ]
+    optim_g:[
+      type: AdamW
+      weight_decay: 0.0001
+      beta1: 0.9
+      beta2: 0.999
+    ]
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 1
+      reduction: mean
+    ]
+  ]
+  val:[
+    window_size: 8
+    val_freq: 4000.0
+    save_img: False
+    rgb2bgr: True
+    use_image: False
+    max_minibatch: 8
+    metrics:[
+      psnr:[
+        type: calculate_psnr
+        crop_border: 0
+        test_y_channel: False
+      ]
+    ]
+  ]
+  logger:[
+    print_freq: 100
+    save_checkpoint_freq: 5000.0
+    use_tb_logger: False
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29500
+  ]
+  is_train: True
+  dist: False
+  rank: 0
+  world_size: 1
+
+W0610 00:05:25.846577 580009 gpu_resources.cc:61] Please NOTE: device: 0, GPU Compute Capability: 8.6, Driver API Version: 11.6, Runtime API Version: 11.6
+W0610 00:05:25.853471 580009 gpu_resources.cc:91] device: 0, cuDNN Version: 8.4.
+2023-06-10 00:05:26,892 INFO: Network: NBNet, with parameters: 10,455,235
+2023-06-10 00:05:26,892 INFO: NBNet(
+  (ConvBlock1): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(3, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(3, 32, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (pool1): MaxPool2D(kernel_size=2, stride=None, padding=0)
+  (skip1): Sequential(
+    (0): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(32, 32, kernel_size=[1, 1], data_format=NCHW)
+    )
+    (1): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(32, 32, kernel_size=[1, 1], data_format=NCHW)
+    )
+    (2): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(32, 32, kernel_size=[1, 1], data_format=NCHW)
+    )
+    (3): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(32, 32, kernel_size=[1, 1], data_format=NCHW)
+    )
+  )
+  (ssa1): SSA(
+    (conv1): Conv2D(64, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu1): LeakyReLU(negative_slope=0.01)
+    (conv2): Conv2D(16, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu2): LeakyReLU(negative_slope=0.01)
+    (conv11): Conv2D(64, 16, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (ConvBlock2): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(32, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(32, 64, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (pool2): MaxPool2D(kernel_size=2, stride=None, padding=0)
+  (skip2): Sequential(
+    (0): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(64, 64, kernel_size=[1, 1], data_format=NCHW)
+    )
+    (1): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(64, 64, kernel_size=[1, 1], data_format=NCHW)
+    )
+    (2): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(64, 64, kernel_size=[1, 1], data_format=NCHW)
+    )
+  )
+  (ssa2): SSA(
+    (conv1): Conv2D(128, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu1): LeakyReLU(negative_slope=0.01)
+    (conv2): Conv2D(16, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu2): LeakyReLU(negative_slope=0.01)
+    (conv11): Conv2D(128, 16, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (ConvBlock3): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(64, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(128, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(64, 128, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (pool3): MaxPool2D(kernel_size=2, stride=None, padding=0)
+  (skip3): Sequential(
+    (0): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(128, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(128, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(128, 128, kernel_size=[1, 1], data_format=NCHW)
+    )
+    (1): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(128, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(128, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(128, 128, kernel_size=[1, 1], data_format=NCHW)
+    )
+  )
+  (ssa3): SSA(
+    (conv1): Conv2D(256, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu1): LeakyReLU(negative_slope=0.01)
+    (conv2): Conv2D(16, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu2): LeakyReLU(negative_slope=0.01)
+    (conv11): Conv2D(256, 16, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (ConvBlock4): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(128, 256, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(256, 256, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(128, 256, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (pool4): MaxPool2D(kernel_size=2, stride=None, padding=0)
+  (skip4): Sequential(
+    (0): ConvBlock(
+      (block): Sequential(
+        (0): Conv2D(256, 256, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Conv2D(256, 256, kernel_size=[3, 3], padding=1, data_format=NCHW)
+        (3): LeakyReLU(negative_slope=0.01)
+      )
+      (conv11): Conv2D(256, 256, kernel_size=[1, 1], data_format=NCHW)
+    )
+  )
+  (ssa4): SSA(
+    (conv1): Conv2D(512, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu1): LeakyReLU(negative_slope=0.01)
+    (conv2): Conv2D(16, 16, kernel_size=[3, 3], padding=1, data_format=NCHW)
+    (relu2): LeakyReLU(negative_slope=0.01)
+    (conv11): Conv2D(512, 16, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (ConvBlock5): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(256, 512, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(512, 512, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(256, 512, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (upv6): Conv2DTranspose(512, 256, kernel_size=[2, 2], stride=[2, 2], data_format=NCHW)
+  (ConvBlock6): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(512, 256, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(256, 256, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(512, 256, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (upv7): Conv2DTranspose(256, 128, kernel_size=[2, 2], stride=[2, 2], data_format=NCHW)
+  (ConvBlock7): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(256, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(128, 128, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(256, 128, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (upv8): Conv2DTranspose(128, 64, kernel_size=[2, 2], stride=[2, 2], data_format=NCHW)
+  (ConvBlock8): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(128, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(64, 64, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(128, 64, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (upv9): Conv2DTranspose(64, 32, kernel_size=[2, 2], stride=[2, 2], data_format=NCHW)
+  (ConvBlock9): ConvBlock(
+    (block): Sequential(
+      (0): Conv2D(64, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (1): LeakyReLU(negative_slope=0.01)
+      (2): Conv2D(32, 32, kernel_size=[3, 3], padding=1, data_format=NCHW)
+      (3): LeakyReLU(negative_slope=0.01)
+    )
+    (conv11): Conv2D(64, 32, kernel_size=[1, 1], data_format=NCHW)
+  )
+  (conv10): Conv2D(32, 3, kernel_size=[3, 3], padding=1, data_format=NCHW)
+)
+2023-06-10 00:05:26,995 INFO: Training statistics:
+	Number of train images: 96000
+	Dataset enlarge ratio: 1
+	Batch size per gpu: 4
+	World size (gpu number): 1
+	Require iter number per epoch: 24000
+	Total epochs: 42; iters: 1000000.
+2023-06-10 00:05:26,995 INFO: Number of val images/folders in ValSet: 68
+2023-06-10 00:05:26,995 INFO: Start training from epoch: 0, iter: 0
+2023-06-10 00:05:27,506 INFO: 
+ Updating Patch_Size to 128 and Batch_Size to 8 
+
+2023-06-10 00:05:41,524 INFO: epoch:0, iter:100, lr: 0.000150 loss: 0.272545  eta: 1 day, 15:57:15, time (data): 0.110
+2023-06-10 00:05:52,785 INFO: epoch:0, iter:200, lr: 0.000150 loss: 0.268754  eta: 1 day, 11:38:03, time (data): 0.109
+2023-06-10 00:06:03,809 INFO: epoch:0, iter:300, lr: 0.000150 loss: 0.151358  eta: 1 day, 9:57:49, time (data): 0.108
+2023-06-10 00:06:15,734 INFO: epoch:0, iter:400, lr: 0.000150 loss: 0.147511  eta: 1 day, 9:44:53, time (data): 0.111
+2023-06-10 00:06:27,036 INFO: epoch:0, iter:500, lr: 0.000150 loss: 0.098963  eta: 1 day, 9:16:21, time (data): 0.109
+2023-06-10 00:06:38,019 INFO: epoch:0, iter:600, lr: 0.000150 loss: 0.107885  eta: 1 day, 8:48:24, time (data): 0.107
+2023-06-10 00:06:49,885 INFO: epoch:0, iter:700, lr: 0.000150 loss: 0.120528  eta: 1 day, 8:49:22, time (data): 0.123
+2023-06-10 00:07:01,073 INFO: epoch:0, iter:800, lr: 0.000150 loss: 0.053604  eta: 1 day, 8:35:55, time (data): 0.128
+2023-06-10 00:07:12,811 INFO: epoch:0, iter:900, lr: 0.000150 loss: 0.065964  eta: 1 day, 8:35:36, time (data): 0.112
+2023-06-10 00:07:23,958 INFO: epoch:0, iter:1000, lr: 0.000150 loss: 0.103508  eta: 1 day, 8:25:28, time (data): 0.116
+2023-06-10 00:07:35,050 INFO: epoch:0, iter:1100, lr: 0.000150 loss: 0.067093  eta: 1 day, 8:16:19, time (data): 0.111
+2023-06-10 00:07:46,216 INFO: epoch:0, iter:1200, lr: 0.000150 loss: 0.063127  eta: 1 day, 8:09:41, time (data): 0.123
+2023-06-10 00:07:57,705 INFO: epoch:0, iter:1300, lr: 0.000150 loss: 0.045171  eta: 1 day, 8:08:10, time (data): 0.115
+2023-06-10 00:08:08,815 INFO: epoch:0, iter:1400, lr: 0.000150 loss: 0.046367  eta: 1 day, 8:02:21, time (data): 0.109
+2023-06-10 00:08:19,952 INFO: epoch:0, iter:1500, lr: 0.000150 loss: 0.049250  eta: 1 day, 7:57:34, time (data): 0.111
+2023-06-10 00:08:31,558 INFO: epoch:0, iter:1600, lr: 0.000150 loss: 0.039319  eta: 1 day, 7:58:15, time (data): 0.109
+2023-06-10 00:08:42,641 INFO: epoch:0, iter:1700, lr: 0.000150 loss: 0.066335  eta: 1 day, 7:53:42, time (data): 0.110
+2023-06-10 00:08:53,859 INFO: epoch:0, iter:1800, lr: 0.000150 loss: 0.038988  eta: 1 day, 7:50:53, time (data): 0.111
+2023-06-10 00:09:05,254 INFO: epoch:0, iter:1900, lr: 0.000150 loss: 0.039142  eta: 1 day, 7:49:54, time (data): 0.111
+2023-06-10 00:09:16,950 INFO: epoch:0, iter:2000, lr: 0.000150 loss: 0.038717  eta: 1 day, 7:51:29, time (data): 0.126
+2023-06-10 00:09:28,332 INFO: epoch:0, iter:2100, lr: 0.000150 loss: 0.043844  eta: 1 day, 7:50:26, time (data): 0.109
+2023-06-10 00:09:39,532 INFO: epoch:0, iter:2200, lr: 0.000150 loss: 0.027468  eta: 1 day, 7:48:04, time (data): 0.108
+2023-06-10 00:09:50,745 INFO: epoch:0, iter:2300, lr: 0.000150 loss: 0.036598  eta: 1 day, 7:46:00, time (data): 0.133
+2023-06-10 00:10:02,134 INFO: epoch:0, iter:2400, lr: 0.000150 loss: 0.027052  eta: 1 day, 7:45:18, time (data): 0.108
+2023-06-10 00:10:13,954 INFO: epoch:0, iter:2500, lr: 0.000150 loss: 0.034511  eta: 1 day, 7:47:30, time (data): 0.123
+2023-06-10 00:10:25,218 INFO: epoch:0, iter:2600, lr: 0.000150 loss: 0.039265  eta: 1 day, 7:45:58, time (data): 0.107
+2023-06-10 00:10:36,578 INFO: epoch:0, iter:2700, lr: 0.000150 loss: 0.026028  eta: 1 day, 7:45:08, time (data): 0.109
+2023-06-10 00:10:47,727 INFO: epoch:0, iter:2800, lr: 0.000150 loss: 0.039907  eta: 1 day, 7:43:05, time (data): 0.110
+2023-06-10 00:10:59,335 INFO: epoch:0, iter:2900, lr: 0.000150 loss: 0.033764  eta: 1 day, 7:43:47, time (data): 0.112
+2023-06-10 00:11:11,574 INFO: epoch:0, iter:3000, lr: 0.000150 loss: 0.024307  eta: 1 day, 7:47:56, time (data): 0.111
+2023-06-10 00:11:22,657 INFO: epoch:0, iter:3100, lr: 0.000150 loss: 0.015692  eta: 1 day, 7:45:36, time (data): 0.110
+2023-06-10 00:11:34,728 INFO: epoch:0, iter:3200, lr: 0.000150 loss: 0.051815  eta: 1 day, 7:48:32, time (data): 0.111
+2023-06-10 00:11:46,391 INFO: epoch:0, iter:3300, lr: 0.000150 loss: 0.032161  eta: 1 day, 7:49:13, time (data): 0.115
+2023-06-10 00:11:57,879 INFO: epoch:0, iter:3400, lr: 0.000150 loss: 0.022259  eta: 1 day, 7:49:01, time (data): 0.123
+2023-06-10 00:12:09,279 INFO: epoch:0, iter:3500, lr: 0.000150 loss: 0.025013  eta: 1 day, 7:48:22, time (data): 0.109
+2023-06-10 00:12:20,937 INFO: epoch:0, iter:3600, lr: 0.000150 loss: 0.012228  eta: 1 day, 7:48:57, time (data): 0.119
+2023-06-10 00:12:32,259 INFO: epoch:0, iter:3700, lr: 0.000150 loss: 0.024045  eta: 1 day, 7:47:59, time (data): 0.108
+2023-06-10 00:12:43,446 INFO: epoch:0, iter:3800, lr: 0.000150 loss: 0.022042  eta: 1 day, 7:46:28, time (data): 0.109
+2023-06-10 00:12:54,361 INFO: epoch:0, iter:3900, lr: 0.000150 loss: 0.027438  eta: 1 day, 7:43:52, time (data): 0.111
+2023-06-10 00:13:05,294 INFO: epoch:0, iter:4000, lr: 0.000150 loss: 0.018345  eta: 1 day, 7:41:27, time (data): 0.121
+2023-06-10 00:13:16,137 INFO: epoch:0, iter:4100, lr: 0.000150 loss: 0.017512  eta: 1 day, 7:38:47, time (data): 0.110
+2023-06-10 00:13:26,948 INFO: epoch:0, iter:4200, lr: 0.000150 loss: 0.019442  eta: 1 day, 7:36:07, time (data): 0.107
+2023-06-10 00:13:38,491 INFO: epoch:0, iter:4300, lr: 0.000150 loss: 0.019015  eta: 1 day, 7:36:23, time (data): 0.108
+2023-06-10 00:13:49,579 INFO: epoch:0, iter:4400, lr: 0.000150 loss: 0.021436  eta: 1 day, 7:34:54, time (data): 0.107
+2023-06-10 00:14:00,819 INFO: epoch:0, iter:4500, lr: 0.000150 loss: 0.011704  eta: 1 day, 7:34:03, time (data): 0.109
+2023-06-10 00:14:11,592 INFO: epoch:0, iter:4600, lr: 0.000150 loss: 0.162050  eta: 1 day, 7:31:33, time (data): 0.109
+2023-06-10 00:14:22,526 INFO: epoch:0, iter:4700, lr: 0.000150 loss: 0.019854  eta: 1 day, 7:29:42, time (data): 0.107
+2023-06-10 00:14:33,416 INFO: epoch:0, iter:4800, lr: 0.000150 loss: 0.021240  eta: 1 day, 7:27:47, time (data): 0.108
+2023-06-10 00:14:44,280 INFO: epoch:0, iter:4900, lr: 0.000150 loss: 0.015707  eta: 1 day, 7:25:51, time (data): 0.108
+2023-06-10 00:14:55,216 INFO: epoch:0, iter:5000, lr: 0.000150 loss: 0.017738  eta: 1 day, 7:24:13, time (data): 0.110
+2023-06-10 00:15:06,155 INFO: epoch:0, iter:5100, lr: 0.000150 loss: 0.017366  eta: 1 day, 7:22:39, time (data): 0.111
+2023-06-10 00:15:17,019 INFO: epoch:0, iter:5200, lr: 0.000150 loss: 0.021572  eta: 1 day, 7:20:54, time (data): 0.110
+2023-06-10 00:15:28,256 INFO: epoch:0, iter:5300, lr: 0.000150 loss: 0.016122  eta: 1 day, 7:20:22, time (data): 0.109
+2023-06-10 00:15:39,159 INFO: epoch:0, iter:5400, lr: 0.000150 loss: 0.021182  eta: 1 day, 7:18:50, time (data): 0.108
+2023-06-10 00:15:50,414 INFO: epoch:0, iter:5500, lr: 0.000150 loss: 0.018767  eta: 1 day, 7:18:24, time (data): 0.109
+2023-06-10 00:16:01,639 INFO: epoch:0, iter:5600, lr: 0.000150 loss: 0.018515  eta: 1 day, 7:17:54, time (data): 0.109
+2023-06-10 00:16:12,960 INFO: epoch:0, iter:5700, lr: 0.000150 loss: 0.013989  eta: 1 day, 7:17:41, time (data): 0.128
+2023-06-10 00:16:23,990 INFO: epoch:0, iter:5800, lr: 0.000150 loss: 0.016098  eta: 1 day, 7:16:38, time (data): 0.111
+2023-06-10 00:16:35,675 INFO: epoch:0, iter:5900, lr: 0.000150 loss: 0.014829  eta: 1 day, 7:17:27, time (data): 0.122
+2023-06-10 00:16:47,048 INFO: epoch:0, iter:6000, lr: 0.000150 loss: 0.015859  eta: 1 day, 7:17:23, time (data): 0.124
+2023-06-10 00:16:58,461 INFO: epoch:0, iter:6100, lr: 0.000150 loss: 0.010787  eta: 1 day, 7:17:24, time (data): 0.109
+2023-06-10 00:17:09,725 INFO: epoch:0, iter:6200, lr: 0.000150 loss: 0.019103  eta: 1 day, 7:17:02, time (data): 0.108
+2023-06-10 00:17:20,539 INFO: epoch:0, iter:6300, lr: 0.000150 loss: 0.010723  eta: 1 day, 7:15:29, time (data): 0.108
+2023-06-10 00:17:31,525 INFO: epoch:0, iter:6400, lr: 0.000150 loss: 0.013513  eta: 1 day, 7:14:25, time (data): 0.112
+2023-06-10 00:17:42,475 INFO: epoch:0, iter:6500, lr: 0.000150 loss: 0.011924  eta: 1 day, 7:13:17, time (data): 0.109
+2023-06-10 00:17:53,281 INFO: epoch:0, iter:6600, lr: 0.000150 loss: 0.013218  eta: 1 day, 7:11:50, time (data): 0.108
+2023-06-10 00:18:04,055 INFO: epoch:0, iter:6700, lr: 0.000150 loss: 0.013157  eta: 1 day, 7:10:20, time (data): 0.108
+2023-06-10 00:18:15,520 INFO: epoch:0, iter:6800, lr: 0.000150 loss: 0.013564  eta: 1 day, 7:10:33, time (data): 0.108
+2023-06-10 00:18:26,453 INFO: epoch:0, iter:6900, lr: 0.000150 loss: 0.011733  eta: 1 day, 7:09:29, time (data): 0.110
+2023-06-10 00:18:37,325 INFO: epoch:0, iter:7000, lr: 0.000150 loss: 0.014862  eta: 1 day, 7:08:17, time (data): 0.107
+2023-06-10 00:18:48,694 INFO: epoch:0, iter:7100, lr: 0.000150 loss: 0.024396  eta: 1 day, 7:08:17, time (data): 0.108
+2023-06-10 00:18:59,608 INFO: epoch:0, iter:7200, lr: 0.000150 loss: 0.012587  eta: 1 day, 7:07:14, time (data): 0.120
+2023-06-10 00:19:10,556 INFO: epoch:0, iter:7300, lr: 0.000150 loss: 0.010866  eta: 1 day, 7:06:17, time (data): 0.108
+2023-06-10 00:19:21,769 INFO: epoch:0, iter:7400, lr: 0.000150 loss: 0.015712  eta: 1 day, 7:05:57, time (data): 0.106
+2023-06-10 00:19:33,421 INFO: epoch:0, iter:7500, lr: 0.000150 loss: 0.012227  eta: 1 day, 7:06:35, time (data): 0.108
+2023-06-10 00:19:44,404 INFO: epoch:0, iter:7600, lr: 0.000150 loss: 0.011661  eta: 1 day, 7:05:44, time (data): 0.108
+2023-06-10 00:19:55,169 INFO: epoch:0, iter:7700, lr: 0.000150 loss: 0.033464  eta: 1 day, 7:04:27, time (data): 0.110
+2023-06-10 00:20:06,046 INFO: epoch:0, iter:7800, lr: 0.000150 loss: 0.012667  eta: 1 day, 7:03:25, time (data): 0.107
+2023-06-10 00:20:17,004 INFO: epoch:0, iter:7900, lr: 0.000150 loss: 0.015095  eta: 1 day, 7:02:35, time (data): 0.114
+2023-06-10 00:20:27,858 INFO: epoch:0, iter:8000, lr: 0.000150 loss: 0.012915  eta: 1 day, 7:01:32, time (data): 0.110
+2023-06-10 00:20:38,876 INFO: epoch:0, iter:8100, lr: 0.000150 loss: 0.020270  eta: 1 day, 7:00:52, time (data): 0.120
+2023-06-10 00:20:49,741 INFO: epoch:0, iter:8200, lr: 0.000150 loss: 0.010118  eta: 1 day, 6:59:53, time (data): 0.107
+2023-06-10 00:21:01,027 INFO: epoch:0, iter:8300, lr: 0.000150 loss: 0.010097  eta: 1 day, 6:59:46, time (data): 0.107
+2023-06-10 00:21:11,909 INFO: epoch:0, iter:8400, lr: 0.000150 loss: 0.013518  eta: 1 day, 6:58:51, time (data): 0.109
+2023-06-10 00:21:22,744 INFO: epoch:0, iter:8500, lr: 0.000150 loss: 0.012350  eta: 1 day, 6:57:51, time (data): 0.113
+2023-06-10 00:21:33,554 INFO: epoch:0, iter:8600, lr: 0.000150 loss: 0.014112  eta: 1 day, 6:56:50, time (data): 0.108
+2023-06-10 00:21:44,409 INFO: epoch:0, iter:8700, lr: 0.000150 loss: 0.009097  eta: 1 day, 6:55:56, time (data): 0.108
+2023-06-10 00:21:55,224 INFO: epoch:0, iter:8800, lr: 0.000150 loss: 0.016412  eta: 1 day, 6:54:57, time (data): 0.107
+2023-06-10 00:22:06,030 INFO: epoch:0, iter:8900, lr: 0.000150 loss: 0.014530  eta: 1 day, 6:53:59, time (data): 0.106
+2023-06-10 00:22:16,858 INFO: epoch:0, iter:9000, lr: 0.000150 loss: 0.013896  eta: 1 day, 6:53:04, time (data): 0.106
+2023-06-10 00:22:27,802 INFO: epoch:0, iter:9100, lr: 0.000150 loss: 0.014263  eta: 1 day, 6:52:23, time (data): 0.110
+2023-06-10 00:22:38,576 INFO: epoch:0, iter:9200, lr: 0.000150 loss: 0.012214  eta: 1 day, 6:51:24, time (data): 0.114
+2023-06-10 00:22:49,883 INFO: epoch:0, iter:9300, lr: 0.000150 loss: 0.011892  eta: 1 day, 6:51:23, time (data): 0.120
+2023-06-10 00:23:01,157 INFO: epoch:0, iter:9400, lr: 0.000150 loss: 0.013938  eta: 1 day, 6:51:18, time (data): 0.110
+2023-06-10 00:23:12,248 INFO: epoch:0, iter:9500, lr: 0.000150 loss: 0.013738  eta: 1 day, 6:50:54, time (data): 0.107
+2023-06-10 00:23:23,269 INFO: epoch:0, iter:9600, lr: 0.000150 loss: 0.011139  eta: 1 day, 6:50:23, time (data): 0.106
+2023-06-10 00:23:34,069 INFO: epoch:0, iter:9700, lr: 0.000150 loss: 0.011338  eta: 1 day, 6:49:30, time (data): 0.109
+2023-06-10 00:23:44,832 INFO: epoch:0, iter:9800, lr: 0.000150 loss: 0.009469  eta: 1 day, 6:48:34, time (data): 0.107
+2023-06-10 00:23:55,826 INFO: epoch:0, iter:9900, lr: 0.000150 loss: 0.011564  eta: 1 day, 6:48:02, time (data): 0.111
+2023-06-10 00:24:06,704 INFO: epoch:0, iter:10000, lr: 0.000150 loss: 0.014021  eta: 1 day, 6:47:19, time (data): 0.119
+2023-06-10 00:24:17,778 INFO: epoch:0, iter:10100, lr: 0.000150 loss: 0.014135  eta: 1 day, 6:46:56, time (data): 0.106
+2023-06-10 00:24:28,581 INFO: epoch:0, iter:10200, lr: 0.000150 loss: 0.007426  eta: 1 day, 6:46:07, time (data): 0.108
+2023-06-10 00:24:39,374 INFO: epoch:0, iter:10300, lr: 0.000150 loss: 0.010462  eta: 1 day, 6:45:18, time (data): 0.110
+2023-06-10 00:24:50,162 INFO: epoch:0, iter:10400, lr: 0.000150 loss: 0.008719  eta: 1 day, 6:44:29, time (data): 0.111
+2023-06-10 00:25:01,008 INFO: epoch:0, iter:10500, lr: 0.000150 loss: 0.018242  eta: 1 day, 6:43:46, time (data): 0.108
+2023-06-10 00:25:11,751 INFO: epoch:0, iter:10600, lr: 0.000150 loss: 0.013266  eta: 1 day, 6:42:54, time (data): 0.107
+2023-06-10 00:25:22,596 INFO: epoch:0, iter:10700, lr: 0.000150 loss: 0.016586  eta: 1 day, 6:42:12, time (data): 0.105
+2023-06-10 00:25:33,386 INFO: epoch:0, iter:10800, lr: 0.000150 loss: 0.012142  eta: 1 day, 6:41:26, time (data): 0.108
+2023-06-10 00:25:44,101 INFO: epoch:0, iter:10900, lr: 0.000150 loss: 0.008409  eta: 1 day, 6:40:33, time (data): 0.107
+2023-06-10 00:25:54,896 INFO: epoch:0, iter:11000, lr: 0.000150 loss: 0.009924  eta: 1 day, 6:39:49, time (data): 0.106
+2023-06-10 00:26:05,697 INFO: epoch:0, iter:11100, lr: 0.000150 loss: 0.008453  eta: 1 day, 6:39:05, time (data): 0.110
+2023-06-10 00:26:16,707 INFO: epoch:0, iter:11200, lr: 0.000150 loss: 0.012808  eta: 1 day, 6:38:41, time (data): 0.118
+2023-06-10 00:26:27,668 INFO: epoch:0, iter:11300, lr: 0.000150 loss: 0.010007  eta: 1 day, 6:38:13, time (data): 0.106
+2023-06-10 00:26:38,590 INFO: epoch:0, iter:11400, lr: 0.000150 loss: 0.010328  eta: 1 day, 6:37:42, time (data): 0.112
+2023-06-10 00:26:49,522 INFO: epoch:0, iter:11500, lr: 0.000150 loss: 0.018238  eta: 1 day, 6:37:11, time (data): 0.117
+2023-06-10 00:27:00,493 INFO: epoch:0, iter:11600, lr: 0.000150 loss: 0.010533  eta: 1 day, 6:36:45, time (data): 0.107
+2023-06-10 00:27:11,280 INFO: epoch:0, iter:11700, lr: 0.000150 loss: 0.010937  eta: 1 day, 6:36:03, time (data): 0.105
+2023-06-10 00:27:21,896 INFO: epoch:0, iter:11800, lr: 0.000150 loss: 0.012531  eta: 1 day, 6:35:07, time (data): 0.105
+2023-06-10 00:27:33,161 INFO: epoch:0, iter:11900, lr: 0.000150 loss: 0.012066  eta: 1 day, 6:35:06, time (data): 0.106
+2023-06-10 00:27:43,836 INFO: epoch:0, iter:12000, lr: 0.000150 loss: 0.005984  eta: 1 day, 6:34:17, time (data): 0.107
+2023-06-10 00:27:54,402 INFO: epoch:0, iter:12100, lr: 0.000150 loss: 0.012473  eta: 1 day, 6:33:19, time (data): 0.104
+2023-06-10 00:28:05,581 INFO: epoch:0, iter:12200, lr: 0.000150 loss: 0.012675  eta: 1 day, 6:33:11, time (data): 0.107
+2023-06-10 00:28:16,286 INFO: epoch:0, iter:12300, lr: 0.000150 loss: 0.013566  eta: 1 day, 6:32:26, time (data): 0.110
+2023-06-10 00:28:26,990 INFO: epoch:0, iter:12400, lr: 0.000150 loss: 0.009363  eta: 1 day, 6:31:40, time (data): 0.106
+2023-06-10 00:28:38,008 INFO: epoch:0, iter:12500, lr: 0.000150 loss: 0.014630  eta: 1 day, 6:31:21, time (data): 0.107
+2023-06-10 00:28:48,712 INFO: epoch:0, iter:12600, lr: 0.000150 loss: 0.011827  eta: 1 day, 6:30:36, time (data): 0.106
+2023-06-10 00:28:59,413 INFO: epoch:0, iter:12700, lr: 0.000150 loss: 0.006579  eta: 1 day, 6:29:52, time (data): 0.105
+2023-06-10 00:29:10,703 INFO: epoch:0, iter:12800, lr: 0.000150 loss: 0.008159  eta: 1 day, 6:29:54, time (data): 0.105
+2023-06-10 00:29:21,555 INFO: epoch:0, iter:12900, lr: 0.000150 loss: 0.024693  eta: 1 day, 6:29:22, time (data): 0.120
+2023-06-10 00:29:32,174 INFO: epoch:0, iter:13000, lr: 0.000150 loss: 0.012233  eta: 1 day, 6:28:33, time (data): 0.107
+2023-06-10 00:29:42,800 INFO: epoch:0, iter:13100, lr: 0.000150 loss: 0.011426  eta: 1 day, 6:27:45, time (data): 0.109
+2023-06-10 00:29:53,562 INFO: epoch:0, iter:13200, lr: 0.000150 loss: 0.009473  eta: 1 day, 6:27:08, time (data): 0.122
+2023-06-10 00:30:04,315 INFO: epoch:0, iter:13300, lr: 0.000150 loss: 0.010065  eta: 1 day, 6:26:31, time (data): 0.105
+2023-06-10 00:30:15,616 INFO: epoch:0, iter:13400, lr: 0.000150 loss: 0.007414  eta: 1 day, 6:26:34, time (data): 0.104
+2023-06-10 00:30:26,620 INFO: epoch:0, iter:13500, lr: 0.000150 loss: 0.009133  eta: 1 day, 6:26:15, time (data): 0.108
+2023-06-10 00:30:37,256 INFO: epoch:0, iter:13600, lr: 0.000150 loss: 0.010690  eta: 1 day, 6:25:30, time (data): 0.108
+2023-06-10 00:30:47,935 INFO: epoch:0, iter:13700, lr: 0.000150 loss: 0.007264  eta: 1 day, 6:24:48, time (data): 0.105
+2023-06-10 00:30:58,553 INFO: epoch:0, iter:13800, lr: 0.000150 loss: 0.013123  eta: 1 day, 6:24:02, time (data): 0.105
+2023-06-10 00:31:09,535 INFO: epoch:0, iter:13900, lr: 0.000150 loss: 0.006223  eta: 1 day, 6:23:43, time (data): 0.106
+2023-06-10 00:31:20,445 INFO: epoch:0, iter:14000, lr: 0.000150 loss: 0.009987  eta: 1 day, 6:23:19, time (data): 0.118
+2023-06-10 00:31:31,053 INFO: epoch:0, iter:14100, lr: 0.000150 loss: 0.007349  eta: 1 day, 6:22:34, time (data): 0.105
+2023-06-10 00:31:41,908 INFO: epoch:0, iter:14200, lr: 0.000150 loss: 0.011963  eta: 1 day, 6:22:06, time (data): 0.105
+2023-06-10 00:31:52,886 INFO: epoch:0, iter:14300, lr: 0.000150 loss: 0.012043  eta: 1 day, 6:21:47, time (data): 0.104
+2023-06-10 00:32:03,647 INFO: epoch:0, iter:14400, lr: 0.000150 loss: 0.009267  eta: 1 day, 6:21:14, time (data): 0.119
+2023-06-10 00:32:14,577 INFO: epoch:0, iter:14500, lr: 0.000150 loss: 0.008438  eta: 1 day, 6:20:52, time (data): 0.120
+2023-06-10 00:32:25,665 INFO: epoch:0, iter:14600, lr: 0.000150 loss: 0.007935  eta: 1 day, 6:20:41, time (data): 0.117
+2023-06-10 00:32:36,858 INFO: epoch:0, iter:14700, lr: 0.000150 loss: 0.008132  eta: 1 day, 6:20:37, time (data): 0.106
+2023-06-10 00:32:47,818 INFO: epoch:0, iter:14800, lr: 0.000150 loss: 0.011686  eta: 1 day, 6:20:18, time (data): 0.106
+2023-06-10 00:32:58,465 INFO: epoch:0, iter:14900, lr: 0.000150 loss: 0.006718  eta: 1 day, 6:19:37, time (data): 0.108
+2023-06-10 00:33:09,080 INFO: epoch:0, iter:15000, lr: 0.000150 loss: 0.013373  eta: 1 day, 6:18:56, time (data): 0.107
+2023-06-10 00:33:20,010 INFO: epoch:0, iter:15100, lr: 0.000150 loss: 0.017786  eta: 1 day, 6:18:35, time (data): 0.105
+2023-06-10 00:33:30,657 INFO: epoch:0, iter:15200, lr: 0.000150 loss: 0.007111  eta: 1 day, 6:17:56, time (data): 0.106
+2023-06-10 00:33:41,551 INFO: epoch:0, iter:15300, lr: 0.000150 loss: 0.007519  eta: 1 day, 6:17:33, time (data): 0.105
+2023-06-10 00:33:52,310 INFO: epoch:0, iter:15400, lr: 0.000150 loss: 0.011663  eta: 1 day, 6:17:02, time (data): 0.106
+2023-06-10 00:34:03,004 INFO: epoch:0, iter:15500, lr: 0.000150 loss: 0.008804  eta: 1 day, 6:16:27, time (data): 0.107
+2023-06-10 00:34:14,203 INFO: epoch:0, iter:15600, lr: 0.000150 loss: 0.006525  eta: 1 day, 6:16:24, time (data): 0.118
+2023-06-10 00:34:24,907 INFO: epoch:0, iter:15700, lr: 0.000150 loss: 0.011007  eta: 1 day, 6:15:50, time (data): 0.108
+2023-06-10 00:34:35,556 INFO: epoch:0, iter:15800, lr: 0.000150 loss: 0.010050  eta: 1 day, 6:15:12, time (data): 0.107
+2023-06-10 00:34:46,211 INFO: epoch:0, iter:15900, lr: 0.000150 loss: 0.010991  eta: 1 day, 6:14:36, time (data): 0.107
+2023-06-10 00:34:56,914 INFO: epoch:0, iter:16000, lr: 0.000150 loss: 0.006080  eta: 1 day, 6:14:03, time (data): 0.107
+2023-06-10 00:35:07,584 INFO: epoch:0, iter:16100, lr: 0.000150 loss: 0.008571  eta: 1 day, 6:13:28, time (data): 0.110
+2023-06-10 00:35:18,448 INFO: epoch:0, iter:16200, lr: 0.000150 loss: 0.008559  eta: 1 day, 6:13:05, time (data): 0.106
+2023-06-10 00:35:29,162 INFO: epoch:0, iter:16300, lr: 0.000150 loss: 0.008875  eta: 1 day, 6:12:33, time (data): 0.106
+2023-06-10 00:35:39,929 INFO: epoch:0, iter:16400, lr: 0.000150 loss: 0.011834  eta: 1 day, 6:12:05, time (data): 0.110
+2023-06-10 00:35:50,722 INFO: epoch:0, iter:16500, lr: 0.000150 loss: 0.009840  eta: 1 day, 6:11:38, time (data): 0.105
+2023-06-10 00:36:01,529 INFO: epoch:0, iter:16600, lr: 0.000150 loss: 0.007621  eta: 1 day, 6:11:12, time (data): 0.104
+2023-06-10 00:36:12,119 INFO: epoch:0, iter:16700, lr: 0.000150 loss: 0.011481  eta: 1 day, 6:10:34, time (data): 0.104
+2023-06-10 00:36:23,169 INFO: epoch:0, iter:16800, lr: 0.000150 loss: 0.012564  eta: 1 day, 6:10:23, time (data): 0.104
+2023-06-10 00:36:33,838 INFO: epoch:0, iter:16900, lr: 0.000150 loss: 0.006220  eta: 1 day, 6:09:50, time (data): 0.108
+2023-06-10 00:36:44,666 INFO: epoch:0, iter:17000, lr: 0.000150 loss: 0.007148  eta: 1 day, 6:09:27, time (data): 0.104
+2023-06-10 00:36:55,644 INFO: epoch:0, iter:17100, lr: 0.000150 loss: 0.008799  eta: 1 day, 6:09:12, time (data): 0.106
+2023-06-10 00:37:06,585 INFO: epoch:0, iter:17200, lr: 0.000150 loss: 0.010111  eta: 1 day, 6:08:55, time (data): 0.106
+2023-06-10 00:37:17,253 INFO: epoch:0, iter:17300, lr: 0.000150 loss: 0.006956  eta: 1 day, 6:08:22, time (data): 0.107
+2023-06-10 00:37:27,999 INFO: epoch:0, iter:17400, lr: 0.000150 loss: 0.006167  eta: 1 day, 6:07:55, time (data): 0.106
+2023-06-10 00:37:38,714 INFO: epoch:0, iter:17500, lr: 0.000150 loss: 0.011714  eta: 1 day, 6:07:25, time (data): 0.105
+2023-06-10 00:37:49,377 INFO: epoch:0, iter:17600, lr: 0.000150 loss: 0.013283  eta: 1 day, 6:06:53, time (data): 0.105
+2023-06-10 00:38:00,067 INFO: epoch:0, iter:17700, lr: 0.000150 loss: 0.007265  eta: 1 day, 6:06:23, time (data): 0.109
+2023-06-10 00:38:11,057 INFO: epoch:0, iter:17800, lr: 0.000150 loss: 0.011093  eta: 1 day, 6:06:10, time (data): 0.108
+2023-06-10 00:38:21,769 INFO: epoch:0, iter:17900, lr: 0.000150 loss: 0.008028  eta: 1 day, 6:05:41, time (data): 0.107
+2023-06-10 00:38:32,516 INFO: epoch:0, iter:18000, lr: 0.000150 loss: 0.006403  eta: 1 day, 6:05:15, time (data): 0.106
+2023-06-10 00:38:43,229 INFO: epoch:0, iter:18100, lr: 0.000150 loss: 0.012098  eta: 1 day, 6:04:46, time (data): 0.108
+2023-06-10 00:38:54,068 INFO: epoch:0, iter:18200, lr: 0.000150 loss: 0.013097  eta: 1 day, 6:04:25, time (data): 0.105
+2023-06-10 00:39:05,170 INFO: epoch:0, iter:18300, lr: 0.000150 loss: 0.008936  eta: 1 day, 6:04:18, time (data): 0.107
+2023-06-10 00:39:15,932 INFO: epoch:0, iter:18400, lr: 0.000150 loss: 0.007651  eta: 1 day, 6:03:53, time (data): 0.115
+2023-06-10 00:39:27,033 INFO: epoch:0, iter:18500, lr: 0.000150 loss: 0.010987  eta: 1 day, 6:03:46, time (data): 0.106
+2023-06-10 00:39:37,992 INFO: epoch:0, iter:18600, lr: 0.000150 loss: 0.011101  eta: 1 day, 6:03:31, time (data): 0.105
+2023-06-10 00:39:48,681 INFO: epoch:0, iter:18700, lr: 0.000150 loss: 0.010123  eta: 1 day, 6:03:02, time (data): 0.110
+2023-06-10 00:39:59,612 INFO: epoch:0, iter:18800, lr: 0.000150 loss: 0.007584  eta: 1 day, 6:02:47, time (data): 0.105
+2023-06-10 00:40:10,696 INFO: epoch:0, iter:18900, lr: 0.000150 loss: 0.009870  eta: 1 day, 6:02:39, time (data): 0.121
+2023-06-10 00:40:21,483 INFO: epoch:0, iter:19000, lr: 0.000150 loss: 0.012107  eta: 1 day, 6:02:15, time (data): 0.110
+2023-06-10 00:40:32,209 INFO: epoch:0, iter:19100, lr: 0.000150 loss: 0.010700  eta: 1 day, 6:01:49, time (data): 0.106
+2023-06-10 00:40:43,233 INFO: epoch:0, iter:19200, lr: 0.000150 loss: 0.009524  eta: 1 day, 6:01:38, time (data): 0.104
+2023-06-10 00:40:53,994 INFO: epoch:0, iter:19300, lr: 0.000150 loss: 0.009941  eta: 1 day, 6:01:14, time (data): 0.138
+2023-06-10 00:41:04,712 INFO: epoch:0, iter:19400, lr: 0.000150 loss: 0.007794  eta: 1 day, 6:00:48, time (data): 0.106
+2023-06-10 00:41:15,436 INFO: epoch:0, iter:19500, lr: 0.000150 loss: 0.009076  eta: 1 day, 6:00:22, time (data): 0.107
+2023-06-10 00:41:26,147 INFO: epoch:0, iter:19600, lr: 0.000150 loss: 0.007898  eta: 1 day, 5:59:56, time (data): 0.112
+2023-06-10 00:41:37,342 INFO: epoch:0, iter:19700, lr: 0.000150 loss: 0.006452  eta: 1 day, 5:59:53, time (data): 0.105
+2023-06-10 00:41:48,227 INFO: epoch:0, iter:19800, lr: 0.000150 loss: 0.011188  eta: 1 day, 5:59:36, time (data): 0.108
+2023-06-10 00:41:58,939 INFO: epoch:0, iter:19900, lr: 0.000150 loss: 0.007455  eta: 1 day, 5:59:10, time (data): 0.106
+2023-06-10 00:42:10,071 INFO: epoch:0, iter:20000, lr: 0.000150 loss: 0.006779  eta: 1 day, 5:59:05, time (data): 0.106
+2023-06-10 00:42:20,821 INFO: epoch:0, iter:20100, lr: 0.000150 loss: 0.005452  eta: 1 day, 5:58:41, time (data): 0.105
+2023-06-10 00:42:31,650 INFO: epoch:0, iter:20200, lr: 0.000150 loss: 0.012071  eta: 1 day, 5:58:21, time (data): 0.118
+2023-06-10 00:42:42,604 INFO: epoch:0, iter:20300, lr: 0.000150 loss: 0.011462  eta: 1 day, 5:58:07, time (data): 0.105
+2023-06-10 00:42:53,555 INFO: epoch:0, iter:20400, lr: 0.000150 loss: 0.010881  eta: 1 day, 5:57:53, time (data): 0.107
+2023-06-10 00:43:04,557 INFO: epoch:0, iter:20500, lr: 0.000150 loss: 0.005587  eta: 1 day, 5:57:42, time (data): 0.106
+2023-06-10 00:43:15,314 INFO: epoch:0, iter:20600, lr: 0.000150 loss: 0.016560  eta: 1 day, 5:57:18, time (data): 0.106
+2023-06-10 00:43:26,035 INFO: epoch:0, iter:20700, lr: 0.000150 loss: 0.010087  eta: 1 day, 5:56:54, time (data): 0.106
+2023-06-10 00:43:36,802 INFO: epoch:0, iter:20800, lr: 0.000150 loss: 0.008761  eta: 1 day, 5:56:31, time (data): 0.108
+2023-06-10 00:43:47,956 INFO: epoch:0, iter:20900, lr: 0.000150 loss: 0.009099  eta: 1 day, 5:56:27, time (data): 0.106
+2023-06-10 00:43:58,637 INFO: epoch:0, iter:21000, lr: 0.000150 loss: 0.007161  eta: 1 day, 5:56:01, time (data): 0.107
+2023-06-10 00:44:09,486 INFO: epoch:0, iter:21100, lr: 0.000150 loss: 0.009889  eta: 1 day, 5:55:42, time (data): 0.105
+2023-06-10 00:44:20,195 INFO: epoch:0, iter:21200, lr: 0.000150 loss: 0.007391  eta: 1 day, 5:55:18, time (data): 0.106
+2023-06-10 00:44:30,869 INFO: epoch:0, iter:21300, lr: 0.000150 loss: 0.007270  eta: 1 day, 5:54:51, time (data): 0.107
+2023-06-10 00:44:41,509 INFO: epoch:0, iter:21400, lr: 0.000150 loss: 0.007171  eta: 1 day, 5:54:24, time (data): 0.106
+2023-06-10 00:44:52,190 INFO: epoch:0, iter:21500, lr: 0.000150 loss: 0.008665  eta: 1 day, 5:53:58, time (data): 0.105
+2023-06-10 00:45:02,886 INFO: epoch:0, iter:21600, lr: 0.000150 loss: 0.008460  eta: 1 day, 5:53:33, time (data): 0.107
+2023-06-10 00:45:13,548 INFO: epoch:0, iter:21700, lr: 0.000150 loss: 0.008587  eta: 1 day, 5:53:07, time (data): 0.105
+2023-06-10 00:45:24,606 INFO: epoch:0, iter:21800, lr: 0.000150 loss: 0.008869  eta: 1 day, 5:52:59, time (data): 0.108
+2023-06-10 00:45:35,502 INFO: epoch:0, iter:21900, lr: 0.000150 loss: 0.009059  eta: 1 day, 5:52:43, time (data): 0.107
+2023-06-10 00:45:46,247 INFO: epoch:0, iter:22000, lr: 0.000150 loss: 0.007412  eta: 1 day, 5:52:21, time (data): 0.108
+2023-06-10 00:45:57,184 INFO: epoch:0, iter:22100, lr: 0.000150 loss: 0.006505  eta: 1 day, 5:52:08, time (data): 0.104
+2023-06-10 00:46:08,104 INFO: epoch:0, iter:22200, lr: 0.000150 loss: 0.012269  eta: 1 day, 5:51:53, time (data): 0.108
+2023-06-10 00:46:18,815 INFO: epoch:0, iter:22300, lr: 0.000150 loss: 0.007139  eta: 1 day, 5:51:30, time (data): 0.108
+2023-06-10 00:46:29,520 INFO: epoch:0, iter:22400, lr: 0.000150 loss: 0.006785  eta: 1 day, 5:51:06, time (data): 0.106
+2023-06-10 00:46:40,363 INFO: epoch:0, iter:22500, lr: 0.000150 loss: 0.008024  eta: 1 day, 5:50:49, time (data): 0.112
+2023-06-10 00:46:51,082 INFO: epoch:0, iter:22600, lr: 0.000150 loss: 0.008875  eta: 1 day, 5:50:26, time (data): 0.105
+2023-06-10 00:47:01,799 INFO: epoch:0, iter:22700, lr: 0.000150 loss: 0.011246  eta: 1 day, 5:50:03, time (data): 0.108
+2023-06-10 00:47:12,552 INFO: epoch:0, iter:22800, lr: 0.000150 loss: 0.005908  eta: 1 day, 5:49:42, time (data): 0.107
+2023-06-10 00:47:23,541 INFO: epoch:0, iter:22900, lr: 0.000150 loss: 0.008292  eta: 1 day, 5:49:31, time (data): 0.110
+2023-06-10 00:47:34,298 INFO: epoch:0, iter:23000, lr: 0.000150 loss: 0.008628  eta: 1 day, 5:49:10, time (data): 0.106
+2023-06-10 00:47:45,092 INFO: epoch:0, iter:23100, lr: 0.000150 loss: 0.009249  eta: 1 day, 5:48:51, time (data): 0.106
+2023-06-10 00:47:55,813 INFO: epoch:0, iter:23200, lr: 0.000150 loss: 0.005590  eta: 1 day, 5:48:29, time (data): 0.105
+2023-06-10 00:48:06,504 INFO: epoch:0, iter:23300, lr: 0.000150 loss: 0.008048  eta: 1 day, 5:48:05, time (data): 0.108
+2023-06-10 00:48:17,383 INFO: epoch:0, iter:23400, lr: 0.000150 loss: 0.012180  eta: 1 day, 5:47:50, time (data): 0.109
+2023-06-10 00:48:28,091 INFO: epoch:0, iter:23500, lr: 0.000150 loss: 0.008793  eta: 1 day, 5:47:28, time (data): 0.105
+2023-06-10 00:48:39,225 INFO: epoch:0, iter:23600, lr: 0.000150 loss: 0.009083  eta: 1 day, 5:47:23, time (data): 0.120
+2023-06-10 00:48:49,927 INFO: epoch:0, iter:23700, lr: 0.000150 loss: 0.009577  eta: 1 day, 5:47:00, time (data): 0.107
+2023-06-10 00:49:01,112 INFO: epoch:0, iter:23800, lr: 0.000150 loss: 0.008556  eta: 1 day, 5:46:58, time (data): 0.106
+2023-06-10 00:49:11,973 INFO: epoch:0, iter:23900, lr: 0.000150 loss: 0.007328  eta: 1 day, 5:46:42, time (data): 0.112
+2023-06-10 00:49:22,696 INFO: epoch:0, iter:24000, lr: 0.000150 loss: 0.006387  eta: 1 day, 5:46:20, time (data): 0.106
+2023-06-10 00:49:22,748 INFO: Saving models and training states on epoch 0.
+Traceback (most recent call last):
+  File "train.py", line 257, in <module>
+    main()
+  File "train.py", line 231, in main
+    current_metric = model.validation(val_loader, current_iter,
+  File "/root/autodl-tmp/Restormer_Paddle-main/models/base_model.py", line 46, in validation
+    return self.nondist_validation(dataloader, current_iter,
+  File "/root/autodl-tmp/Restormer_Paddle-main/models/image_restoration_model.py", line 222, in nondist_validation
+    test()
+  File "/root/autodl-tmp/Restormer_Paddle-main/models/image_restoration_model.py", line 175, in pad_test
+    self.nonpad_test(img)
+  File "/root/autodl-tmp/Restormer_Paddle-main/models/image_restoration_model.py", line 192, in nonpad_test
+    pred = self.net_g(img)
+  File "/root/miniconda3/lib/python3.8/site-packages/paddle/fluid/dygraph/layers.py", line 930, in __call__
+    return self._dygraph_call_func(*inputs, **kwargs)
+  File "/root/miniconda3/lib/python3.8/site-packages/paddle/fluid/dygraph/layers.py", line 915, in _dygraph_call_func
+    outputs = self.forward(*inputs, **kwargs)
+  File "/root/autodl-tmp/Restormer_Paddle-main/models/archs/NBNet.py", line 124, in forward
+    skip4 = self.ssa4(skip4, up6)
+  File "/root/miniconda3/lib/python3.8/site-packages/paddle/fluid/dygraph/layers.py", line 930, in __call__
+    return self._dygraph_call_func(*inputs, **kwargs)
+  File "/root/miniconda3/lib/python3.8/site-packages/paddle/fluid/dygraph/layers.py", line 915, in _dygraph_call_func
+    outputs = self.forward(*inputs, **kwargs)
+  File "/root/autodl-tmp/Restormer_Paddle-main/models/archs/NBNet.py", line 39, in forward
+    cat = paddle.concat([input1, input2], 3)
+  File "/root/miniconda3/lib/python3.8/site-packages/paddle/tensor/manipulation.py", line 331, in concat
+    return paddle.fluid.layers.concat(input=x, axis=axis, name=name)
+  File "/root/miniconda3/lib/python3.8/site-packages/paddle/fluid/layers/tensor.py", line 343, in concat
+    _C_ops.concat(input, out, 'axis', axis)
+ValueError: (InvalidArgument) The 1-th dimension of input[0] and input[1] is expected to be equal.But received input[0]'s shape = [1, 41, 61, 256], input[1]'s shape = [1, 40, 60, 256].
+  [Hint: Expected inputs_dims[0][j] == inputs_dims[i][j], but received inputs_dims[0][j]:41 != inputs_dims[i][j]:40.] (at /paddle/paddle/phi/kernels/funcs/concat_funcs.h:83)
+  [operator < concat > error]
