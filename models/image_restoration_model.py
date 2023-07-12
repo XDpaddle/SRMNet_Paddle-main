@@ -5,7 +5,7 @@ from os import path as osp
 from tqdm import tqdm
 import paddle
 
-from models.archs.NBNet import NBNet
+from models.archs.ridnet import RIDNET
 from models.base_model import BaseModel
 from utils.logger import get_root_logger
 from utils.img_utils import imwrite, tensor2img
@@ -63,7 +63,7 @@ class ImageCleanModel(BaseModel):
             use_identity = self.opt['train']['mixing_augs'].get('use_identity', False)
             self.mixing_augmentation = Mixing_Augment(mixup_beta, use_identity)
 
-        self.net_g = NBNet()
+        self.net_g = RIDNET()
         if self.is_train:
             self.init_training_settings()
 

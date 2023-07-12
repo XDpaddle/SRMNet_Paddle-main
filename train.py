@@ -146,8 +146,8 @@ def main():
     train_loader, val_loader, total_epochs, total_iters, num_iter_per_epoch = result
 
 
-    current_step = 0
     start_epoch = 0
+    current_iter = 0
 
     if args.resume is not None:
         state_dict = paddle.load(args.resume+".pdparams")

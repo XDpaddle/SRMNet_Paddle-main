@@ -24,7 +24,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 8
-    batch_size_per_gpu: 4
+    batch_size_per_gpu: 8
 
     ### -------------Progressive training--------------------------
     mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
@@ -55,18 +55,18 @@ datasets:
 
 # network structures
 network_g:
-  type: NBNet
+  type: RIDNET
 
 # path
 path:
-  pretrain_network_G: /root/autodl-tmp/Restormer_Paddle-main/output/model/last_model.pdparams
+  pretrain_network_G: ~
   strict_load_g: true
-  resume_state: /root/autodl-tmp/Restormer_Paddle-main/output/model/last_model.pdopt
+  resume_state: ~
   output: /root/autodl-tmp/Restormer_Paddle-main/exp/
 
 # training settings
 train:
-  total_iter: 1000000
+  total_iter: 400000
   warmup_iter: -1 # no warm up
   use_grad_clip: true
 

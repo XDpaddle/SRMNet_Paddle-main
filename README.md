@@ -1,8 +1,8 @@
-# 基于Paddle复现《NBNet: Noise Basis Learning for Image Denoising with Subspace Projection》
+# 基于Paddle复现《Real Image Denoising with Feature Attention》
 
 ## 1.简介
 
-In this paper, we introduce NBNet, a novel framework for image denoising. Unlike previous works, we propose to tackle this challenging problem from a new perspective: noise reduction by image-adaptive projection. Specifically, we propose to train a network that can separate signal and noise by learning a set of reconstruction basis in the feature space. Subsequently, image denosing can be achieved by selecting corresponding basis of the signal subspace and projecting the input into such space. Our key insight is that projection can naturally maintain the local structure of input signal, especially for areas with low light or weak textures. Towards this end, we propose SSA, a non-local subspace attention module designed explicitly to learn the basis generation as well as the subspace projection. We further incorporate SSA with NBNet, a UNet structured network designed for end-to-end image denosing. We conduct evaluations on benchmarks, including SIDD and DND, and NBNet achieves state-of-the-art performance on PSNR and SSIM with significantly less computational cost.
+Deep convolutional neural networks perform better on images containing spatially invariant noise (synthetic noise); however, their performance is limited on real-noisy photographs and requires multiple stage network modeling. To advance the practicability of denoising algorithms, this paper proposes a novel single-stage blind real image denoising network (RIDNet) by employing a modular architecture. We use a residual on the residual structure to ease the flow of low-frequency information and apply feature attention to exploit the channel dependencies. Furthermore, the evaluation in terms of quantitative metrics and visual quality on three synthetic and four real noisy datasets against 19 state-of-the-art algorithms demonstrate the superiority of our RIDNet.
 
 
 ## 2.复现精度
@@ -11,7 +11,7 @@ In this paper, we introduce NBNet, a novel framework for image denoising. Unlike
 
 | Network | opt   | iters  | learning rate | batch_size | dataset | GPUS | PSNR    |
 | ------- | ----- | ------ | ------------- | ---------- | ------- | ---- | ------- |
-| NBNet | AdamW | 1000000 | 1.5e-4        | 4          | SIDD    | 1    | 40.24 |
+| RIDNet  | AdamW | 400000 | 1.5e-4        | 8          | SIDD    | 1    | 40.3460 |
 
 
 ## 3.数据集
@@ -23,7 +23,7 @@ In this paper, we introduce NBNet, a novel framework for image denoising. Unlike
 
 最优权重:
 
-链接：https://pan.baidu.com/s/1JP2MFpxM6a4jEC4787GZaw?pwd=hh66 
+链接：https://pan.baidu.com/s/1Q1mdxfE1wmm0Pr33M3tcLQ?pwd=hh66 
 提取码：hh66
 
 
@@ -41,13 +41,13 @@ scikit-image == 0.19.2
 多卡训练，启动方式如下：
 
 ```shell
-python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_NBNet.yml 
+python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_RIDNet.yml 
 ```
 
 多卡恢复训练，启动方式如下：
 
 ```shell
-python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_NBNet.yml --resume ../245_model
+python -u -m paddle.distributed.launch  train.py -opt configs/GaussianColorDenoising_RIDNet.yml --resume ../245_model
 ```
 
 参数介绍：
@@ -63,10 +63,10 @@ resume: 从哪个模型开始恢复训练，需要pdparams和pdopt文件。
 验证数据的地址需要设置configs/GaussianColorDenoising_Restormer.yml中的datasets.val.dataroot_gt参数。
 
 ```shell
-python val.py -opt configs/GaussianColorDenoising_NBNet.yml --weights output/model/last_model.pdparams --sigmas 15 
+python val.py -opt configs/GaussianColorDenoising_RIDNet.yml --weights output/model/last_model.pdparams --sigmas 15 
 ```
 
-[Eval] PSNR: 40.5062
+[Eval] PSNR: 40.3460
 
 ```
 参数说明：
@@ -104,7 +104,7 @@ sigmas: 噪声等级。
 模型导出可执行以下命令：
 
 ```shell
-python export_model.py -opt ./test_tipc/configs/GaussianColorDenoising_NBNet.yml --model_path ./output/model/last_model.pdparams --save_dir ./test_tipc/output/
+python export_model.py -opt ./test_tipc/configs/GaussianColorDenoising_RIDNet.yml --model_path ./output/model/last_model.pdparams --save_dir ./test_tipc/output/
 ```
 
 参数说明：
@@ -121,7 +121,7 @@ save_dir: 输出图片保存路径
 
 ```shell
 python infer.py
---use_gpu=False --enable_mkldnn=False --cpu_threads=2 --model_file=./test_tipc/output/model.pdmodel --batch_size=2 --input_file=../data/SIDD --enable_benchmark=True --precision=fp32 --params_file=.output/last_model.pdiparams 
+--use_gpu=False --enable_mkldnn=False --cpu_threads=2 --model_file=./test_tipc/output/model.pdmodel --batch_size=2 --input_file=../data/SIDD --enable_benchmark=True --precision=fp32 --params_file=.output/best_model.pdiparams 
 ```
 
 参数说明:
@@ -194,7 +194,7 @@ Restormer_Paddle
 
 | 信息     | 描述                |
 | -------- | ------------------- |
-| 模型名称 | NBNet              |
+| 模型名称 | RIDNet              |
 | 框架版本 | PaddlePaddle==2.2.0 |
 | 应用场景 | 降噪                |
 
