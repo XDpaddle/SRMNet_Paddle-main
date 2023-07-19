@@ -7,7 +7,7 @@ Image restoration is a low-level vision task which is to restore degraded images
 
 ## 2.复现精度
 
-采用单卡训练,在SIDD测试集的测试效果如下表,达到验收指标,PSNR: 34.39。
+SIDD添加高斯噪声
 
 | Network | opt   | iters  | learning rate | batch_size | dataset | GPUS | PSNR    |
 | ------- | ----- | ------ | ------------- | ---------- | ------- | ---- | ------- |
